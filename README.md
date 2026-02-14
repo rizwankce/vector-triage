@@ -2,11 +2,19 @@
 
 Zero-config duplicate and similar detection for GitHub Issues and Pull Requests.
 
-Vector Triage Bot runs as a GitHub Action, embeds new issue/PR content with GitHub Models, searches a SQLite index (vector + FTS), and posts a triage comment when matches are found.
+Vector Triage Bot runs as a GitHub Action, embeds issue/PR content with GitHub Models, searches a local SQLite index (vector + FTS), and posts a triage comment when related items are found.
+
+## Why This Project
+
+- No external vector DB or hosted service
+- No extra API key configuration
+- Single workflow file to install
+- Works for both issues and PRs
+- Built for open source and private repos
 
 ## Quick Start
 
-Create `.github/workflows/triage.yml` in your target repository:
+Create `.github/workflows/triage.yml` in the repository where you want triage:
 
 ```yaml
 name: Triage
@@ -33,17 +41,9 @@ jobs:
       - uses: rizwankce/vector-triage@v1.0.2
 ```
 
-That is the only file needed in the consumer repo.
+That is the full setup.
 
-## Why `pull_request_target`
-
-Fork PRs need base-repo token permissions to:
-- post triage comments
-- update the index branch
-
-`pull_request_target` runs in the base repository context. The action does not checkout or execute fork code; it only reads PR metadata (title/body/files/diff) as untrusted text.
-
-## Inputs
+## Configuration
 
 | Input | Env Var | Default | Range | Description |
 |---|---|---|---|---|
@@ -58,75 +58,79 @@ Example override:
 steps:
   - uses: rizwankce/vector-triage@v1.0.2
     with:
-      similarity-threshold: "0.8"
+      similarity-threshold: "0.80"
       duplicate-threshold: "0.94"
       max-results: "8"
       index-branch: "triage-index"
 ```
 
-## Behavior
+## How It Behaves
 
 - First run:
   - no index exists yet
   - item is indexed
   - no triage comment is posted
+- On later runs:
+  - similar/duplicate matches produce one managed triage comment (`<!-- triage-bot:v1 -->`)
+  - stale triage comments are updated or removed
 - No matches:
-  - no new comment is posted
-  - existing triage comment is removed if it became stale
-- Matches found:
-  - bot posts/updates one comment identified by `<!-- triage-bot:v1 -->`
-  - duplicate warning appears when score >= duplicate threshold
-  - similar table includes open/closed/merged states
-- Errors:
-  - action logs `::warning::...` and exits successfully for recoverable failures
+  - no comment noise is added
+- Recoverable failures:
+  - logs `::warning::...`
+  - exits non-fatally
 
-## Security Model
+## Security Notes
 
-- PR content is treated as untrusted text.
-- No PR branch checkout in action runtime path.
-- No `eval`/dynamic shell execution of PR content.
-- Release binary is checksum-verified before execution.
+`pull_request_target` is required so fork PR events can comment and persist state with base-repo token permissions.
 
-Security checklist:
-- `action.yml` has no `actions/checkout`
-- `action.yml` verifies `sha256` before running binary
-- event parser only reads JSON payload fields
+Safety model:
+- PR content is treated as untrusted text only
+- no PR branch checkout in action runtime path
+- no dynamic `eval`/template execution from PR content
+- downloaded release binary is SHA256-verified before execution
 
 ## Release Model
 
 - `action.yml` downloads prebuilt `triage-bot-linux-amd64` from GitHub Releases.
-- `.github/workflows/release.yml` builds and uploads:
+- `.github/workflows/release.yml` publishes:
   - `triage-bot-linux-amd64`
   - `triage-bot-linux-amd64.sha256`
 
-Cut a release by pushing a version tag, for example:
+Cut a release:
 
 ```bash
 git tag v1.0.2
 git push origin v1.0.2
 ```
 
-## Testing
+## Development and Validation
 
-Local test commands:
+Local tests:
 
 ```bash
 go test ./...
 go test ./internal/store/... -run Integration -v
 ```
 
-CI workflows:
+Key workflows:
 - `.github/workflows/test.yml` for unit + store integration tests
-- `.github/workflows/e2e.yml` for scheduled/manual end-to-end validation
+- `.github/workflows/e2e.yml` for scheduled/manual E2E validation
 
-## E2E Validation
+Useful docs:
+- `docs/e2e-runbook.txt`
+- `docs/troubleshooting.txt`
+- `docs/perf-notes.txt`
 
-- Runbook: `docs/e2e-runbook.txt`
-- Workflow: `.github/workflows/e2e.yml`
+## Open Source
 
-The E2E workflow validates duplicate/similar/no-match issue scenarios and uploads artifacts for audit.
+This is an open source project. Issues and pull requests are welcome.
 
-## Troubleshooting and Performance
+## Acknowledgements
 
-- Troubleshooting: `docs/troubleshooting.txt`
-- Performance notes: `docs/perf-notes.txt`
+- Inspired by [`@tobi/qmd`](https://github.com/tobi/qmd) for SQLite + vector/hybrid retrieval patterns.
+- Inspired by [`@similigh/simili-bot`](https://github.com/similigh/simili-bot) for GitHub bot workflow/state ideas.
+- Special thanks to [steipete.me](https://steipete.me/) for the initial idea spark.
+
+## License
+
+MIT. See `LICENSE`.
