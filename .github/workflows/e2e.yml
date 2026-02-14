@@ -51,7 +51,7 @@ jobs:
           echo "BASE_BRANCH=${BASE_BRANCH}" >> "${GITHUB_ENV}"
           echo "E2E_RUN_ID=${RUN_ID}" >> "${GITHUB_ENV}"
 
-      - name: Create deterministic issue scenarios
+      - name: Create deterministic issue scenarios (sequential)
         run: |
           set -euo pipefail
 
@@ -71,25 +71,70 @@ jobs:
               --label "triage-e2e"
           }
 
+          wait_for_issue_run_success() {
+            local issue_title="$1"
+            local timeout_secs=900
+            local sleep_secs=10
+            local elapsed=0
+
+            while [ "${elapsed}" -lt "${timeout_secs}" ]; do
+              run_line="$(gh run list \
+                --repo "${TARGET_REPO}" \
+                --workflow triage.yml \
+                --event issues \
+                --limit 50 \
+                --json displayTitle,status,conclusion \
+                --jq --arg t "${issue_title}" 'map(select(.displayTitle == $t)) | first | if . == null then "none" else "\(.status)|\(.conclusion // \"\")" end')"
+
+              if [ "${run_line}" != "none" ]; then
+                status="${run_line%%|*}"
+                conclusion="${run_line#*|}"
+                if [ "${status}" = "completed" ]; then
+                  if [ "${conclusion}" = "success" ]; then
+                    return 0
+                  fi
+                  echo "::error::Issue workflow for '${issue_title}' completed with conclusion=${conclusion}"
+                  return 1
+                fi
+              fi
+
+              sleep "${sleep_secs}"
+              elapsed=$((elapsed + sleep_secs))
+            done
+
+            echo "::error::Timed out waiting for triage run for '${issue_title}'"
+            return 1
+          }
+
+          seed_dup_title="E2E Seed Duplicate ${E2E_RUN_ID}: login timeout in dashboard"
           seed_dup_url="$(create_issue \
-            "E2E Seed Duplicate ${E2E_RUN_ID}: login timeout in dashboard" \
+            "${seed_dup_title}" \
             "Users report dashboard login timing out after 30 seconds when session refresh fails.")"
+          wait_for_issue_run_success "${seed_dup_title}"
 
+          seed_sim_title="E2E Seed Similar ${E2E_RUN_ID}: CSV export unicode bug"
           seed_sim_url="$(create_issue \
-            "E2E Seed Similar ${E2E_RUN_ID}: CSV export unicode bug" \
+            "${seed_sim_title}" \
             "CSV export drops accented characters and emoji in customer names.")"
+          wait_for_issue_run_success "${seed_sim_title}"
 
+          duplicate_title="E2E Candidate Duplicate ${E2E_RUN_ID}: dashboard login timeout at 30s"
           duplicate_url="$(create_issue \
-            "E2E Candidate Duplicate ${E2E_RUN_ID}: dashboard login timeout at 30s" \
+            "${duplicate_title}" \
             "Duplicate behavior: dashboard login expires around 30 seconds when token refresh is missed.")"
+          wait_for_issue_run_success "${duplicate_title}"
 
+          similar_title="E2E Candidate Similar ${E2E_RUN_ID}: export file encoding issues"
           similar_url="$(create_issue \
-            "E2E Candidate Similar ${E2E_RUN_ID}: export file encoding issues" \
+            "${similar_title}" \
             "Exported spreadsheets lose unicode characters in names and notes.")"
+          wait_for_issue_run_success "${similar_title}"
 
+          nomatch_title="E2E Candidate No Match ${E2E_RUN_ID}: dark mode sidebar spacing"
           nomatch_url="$(create_issue \
-            "E2E Candidate No Match ${E2E_RUN_ID}: dark mode sidebar spacing" \
+            "${nomatch_title}" \
             "Sidebar in dark mode has extra left padding only on mobile landscape.")"
+          wait_for_issue_run_success "${nomatch_title}"
 
           cat > e2e-artifacts/issues.json <<EOF
           {
@@ -101,7 +146,7 @@ jobs:
           }
           EOF
 
-      - name: Wait for triage comment processing
+      - name: Collect triage comments
         run: |
           set -euo pipefail
 
@@ -109,29 +154,6 @@ jobs:
           dup_issue="$(jq -r '.candidate_duplicate' e2e-artifacts/issues.json)"
           sim_issue="$(jq -r '.candidate_similar' e2e-artifacts/issues.json)"
           nomatch_issue="$(jq -r '.candidate_nomatch' e2e-artifacts/issues.json)"
-
-          wait_for_marker() {
-            local issue_number="$1"
-            local timeout_secs=420
-            local sleep_secs=15
-            local elapsed=0
-
-            while [ "${elapsed}" -lt "${timeout_secs}" ]; do
-              marker_count="$(gh api "repos/${TARGET_REPO}/issues/${issue_number}/comments" \
-                --jq 'map(select(.body | contains("<!-- triage-bot:v1 -->"))) | length')"
-              if [ "${marker_count}" -gt 0 ]; then
-                return 0
-              fi
-              sleep "${sleep_secs}"
-              elapsed=$((elapsed + sleep_secs))
-            done
-            return 1
-          }
-
-          wait_for_marker "${dup_issue}"
-          wait_for_marker "${sim_issue}"
-
-          sleep 60
           gh api "repos/${TARGET_REPO}/issues/${dup_issue}/comments" > e2e-artifacts/duplicate-comments.json
           gh api "repos/${TARGET_REPO}/issues/${sim_issue}/comments" > e2e-artifacts/similar-comments.json
           gh api "repos/${TARGET_REPO}/issues/${nomatch_issue}/comments" > e2e-artifacts/nomatch-comments.json
