@@ -86,7 +86,7 @@ jobs:
                 --json displayTitle,status,conclusion)"
 
               run_line="$(echo "${runs_json}" | jq -r --arg t "${issue_title}" \
-                'map(select(.displayTitle == $t)) | first | if . == null then "none" else "\(.status)|\(.conclusion // \"\")" end')"
+                'map(select(.displayTitle == $t)) | first | if . == null then "none" else "\(.status)|\(.conclusion // "")" end')"
 
               if [ "${run_line}" != "none" ]; then
                 status="${run_line%%|*}"
