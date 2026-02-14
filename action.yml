@@ -28,7 +28,7 @@ runs:
       run: |
         set -euo pipefail
 
-        VERSION="v1.0.0"
+        VERSION="v1.0.2"
         BINARY="triage-bot-linux-amd64"
         BASE_URL="https://github.com/rizwankce/vector-triage/releases/download/${VERSION}"
 

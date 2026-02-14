@@ -30,7 +30,7 @@ jobs:
       group: triage-index
       cancel-in-progress: false
     steps:
-      - uses: rizwankce/vector-triage@v1
+      - uses: rizwankce/vector-triage@v1.0.2
 ```
 
 That is the only file needed in the consumer repo.
@@ -56,7 +56,7 @@ Example override:
 
 ```yaml
 steps:
-  - uses: rizwankce/vector-triage@v1
+  - uses: rizwankce/vector-triage@v1.0.2
     with:
       similarity-threshold: "0.8"
       duplicate-threshold: "0.94"
@@ -102,8 +102,8 @@ Security checklist:
 Cut a release by pushing a version tag, for example:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.0.2
+git push origin v1.0.2
 ```
 
 ## Testing
