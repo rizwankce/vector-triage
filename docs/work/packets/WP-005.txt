@@ -1,6 +1,6 @@
 ID: WP-005
 Title: Implement ingest pipeline for issues and pull requests
-Status: todo
+Status: done
 Priority: P0
 Depends_On: none
 Owner: codex
@@ -31,10 +31,10 @@ Implementation_Steps:
 4. Add tests for issue/PR shape variants.
 
 Acceptance_Criteria:
-- [ ] Issue and PR builders match spec content format.
-- [ ] Diff is capped at 4000 characters.
-- [ ] Empty content fallbacks work without panics.
-- [ ] Ingest tests pass.
+- [x] Issue and PR builders match spec content format.
+- [x] Diff is capped at 4000 characters.
+- [x] Empty content fallbacks work without panics.
+- [x] Ingest tests pass.
 
 Validation:
 - Command: `go test ./internal/ingest/...`

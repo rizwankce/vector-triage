@@ -1,6 +1,6 @@
 ID: WP-014
 Title: Apply pull_request_target security hardening
-Status: todo
+Status: done
 Priority: P1
 Depends_On: WP-013
 Owner: codex
@@ -31,10 +31,10 @@ Implementation_Steps:
 4. Document secure operation and constraints.
 
 Acceptance_Criteria:
-- [ ] No path executes code from forked PR content.
-- [ ] Workflow and docs explicitly state forbidden behaviors.
-- [ ] Security assertions are reflected in tests/docs.
-- [ ] Security review checklist is complete.
+- [x] No path executes code from forked PR content.
+- [x] Workflow and docs explicitly state forbidden behaviors.
+- [x] Security assertions are reflected in tests/docs.
+- [x] Security review checklist is complete.
 
 Validation:
 - Command: `rg -n \"actions/checkout|pull_request_target|eval|bash -c\" .`

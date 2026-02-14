@@ -1,6 +1,6 @@
 ID: WP-002
 Title: Implement sqlite-vec loading and two-step vector search
-Status: todo
+Status: done
 Priority: P0
 Depends_On: WP-001
 Owner: codex
@@ -31,10 +31,10 @@ Implementation_Steps:
 4. Add tests for happy path and self-match exclusion.
 
 Acceptance_Criteria:
-- [ ] Vector search uses two-step pattern and avoids JOIN hangs.
-- [ ] Returned vecScore is always clamped to [0,1].
-- [ ] Current item is never returned as a match.
-- [ ] Store tests pass.
+- [x] Vector search uses two-step pattern and avoids JOIN hangs.
+- [x] Returned vecScore is always clamped to [0,1].
+- [x] Current item is never returned as a match.
+- [x] Store tests pass.
 
 Validation:
 - Command: `go test ./internal/store/...`

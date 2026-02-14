@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sync"
 
+	sqlite_vec "github.com/asg017/sqlite-vec-go-bindings/cgo"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -14,10 +16,16 @@ type Store struct {
 	db *sql.DB
 }
 
+var sqliteVecAutoOnce sync.Once
+
 func Open(ctx context.Context, dbPath string) (*Store, error) {
 	if dbPath == "" {
 		return nil, errors.New("db path is required")
 	}
+
+	sqliteVecAutoOnce.Do(func() {
+		sqlite_vec.Auto()
+	})
 
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {

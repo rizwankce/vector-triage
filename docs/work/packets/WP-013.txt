@@ -1,6 +1,6 @@
 ID: WP-013
 Title: Implement composite action and release workflow with checksums
-Status: todo
+Status: done
 Priority: P1
 Depends_On: WP-011
 Owner: codex
@@ -30,10 +30,10 @@ Implementation_Steps:
 4. Document release/tag process.
 
 Acceptance_Criteria:
-- [ ] Action runs binary only after checksum verification passes.
-- [ ] Release workflow publishes both binary and checksum.
-- [ ] Action inputs map to correct `INPUT_*` env vars.
-- [ ] Action lint/validation passes.
+- [x] Action runs binary only after checksum verification passes.
+- [x] Release workflow publishes both binary and checksum.
+- [x] Action inputs map to correct `INPUT_*` env vars.
+- [x] Action lint/validation passes.
 
 Validation:
 - Command: `act -W .github/workflows/release.yml -n` or CI dry run

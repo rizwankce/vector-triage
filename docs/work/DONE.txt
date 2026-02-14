@@ -1,3 +1,20 @@
 Completed Work Packets:
 
 - WP-001 | Scaffold store schema and migrations
+- WP-002 | Implement sqlite-vec loading and two-step vector search
+- WP-003 | Implement FTS search, query builder, and BM25 normalization
+- WP-004 | Implement RRF fusion and display similarity model
+- WP-005 | Implement ingest pipeline for issues and pull requests
+- WP-006 | Implement GitHub Models embedder with retries and truncation
+- WP-007 | Implement GitHub event parsing and API client wrappers
+- WP-008 | Implement orphan-branch state pull/push manager
+- WP-009 | Implement triage comment create/update/delete manager
+- WP-010 | Implement engine orchestration flow
+- WP-011 | Implement CLI entrypoint, config parsing, and non-fatal error policy
+- WP-012 | Implement markdown response formatter
+- WP-013 | Implement composite action and release workflow with checksums
+- WP-014 | Apply pull_request_target security hardening
+- WP-015 | Add unit tests across all packages
+- WP-016 | Add sqlite-vec integration tests with real DB file
+- WP-017 | Add E2E validation workflow and runbook
+- WP-018 | Finalize README, troubleshooting, and performance notes

@@ -1,6 +1,6 @@
 ID: WP-004
 Title: Implement RRF fusion and display similarity model
-Status: todo
+Status: done
 Priority: P0
 Depends_On: WP-002,WP-003
 Owner: codex
@@ -30,10 +30,10 @@ Implementation_Steps:
 4. Add deterministic tests with known ranked lists.
 
 Acceptance_Criteria:
-- [ ] Final ordering is by RRF score.
-- [ ] User-facing percentage comes from display similarity.
-- [ ] Threshold behavior matches spec defaults.
-- [ ] Tests cover one-list and two-list overlap cases.
+- [x] Final ordering is by RRF score.
+- [x] User-facing percentage comes from display similarity.
+- [x] Threshold behavior matches spec defaults.
+- [x] Tests cover one-list and two-list overlap cases.
 
 Validation:
 - Command: `go test ./internal/store/... -run 'RRF|Fuse'`

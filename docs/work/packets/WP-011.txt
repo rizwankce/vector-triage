@@ -1,6 +1,6 @@
 ID: WP-011
 Title: Implement CLI entrypoint, config parsing, and non-fatal error policy
-Status: todo
+Status: done
 Priority: P1
 Depends_On: WP-010
 Owner: codex
@@ -30,10 +30,10 @@ Implementation_Steps:
 4. Add focused tests for config parsing and error policy.
 
 Acceptance_Criteria:
-- [ ] Binary runs with only required GitHub env vars and defaults.
-- [ ] Recoverable failures log `::warning::` and exit 0.
-- [ ] Panic path exits non-zero.
-- [ ] CLI tests pass.
+- [x] Binary runs with only required GitHub env vars and defaults.
+- [x] Recoverable failures log `::warning::` and exit 0.
+- [x] Panic path exits non-zero.
+- [x] CLI tests pass.
 
 Validation:
 - Command: `go test ./cmd/triage/...`

@@ -1,6 +1,6 @@
 ID: WP-007
 Title: Implement GitHub event parsing and API client wrappers
-Status: todo
+Status: done
 Priority: P0
 Depends_On: none
 Owner: codex
@@ -30,10 +30,10 @@ Implementation_Steps:
 4. Add tests for parsing and API wrapper behavior.
 
 Acceptance_Criteria:
-- [ ] Issue and PR events map correctly into internal `Event`.
-- [ ] Client wrappers hide go-github details from callers.
-- [ ] Errors include enough context for warning logs.
-- [ ] Parsing tests pass with representative payload fixtures.
+- [x] Issue and PR events map correctly into internal `Event`.
+- [x] Client wrappers hide go-github details from callers.
+- [x] Errors include enough context for warning logs.
+- [x] Parsing tests pass with representative payload fixtures.
 
 Validation:
 - Command: `go test ./internal/github/... -run 'Event|Client'`

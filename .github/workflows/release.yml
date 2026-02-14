@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y gcc libsqlite3-dev
+
+      - name: Build linux amd64 binary
+        run: |
+          CGO_ENABLED=1 GOOS=linux GOARCH=amd64 \
+          go build -ldflags="-s -w -extldflags '-static'" \
+          -o triage-bot-linux-amd64 ./cmd/triage
+
+      - name: Generate SHA256 checksum
+        run: sha256sum triage-bot-linux-amd64 > triage-bot-linux-amd64.sha256
+
+      - name: Publish release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            triage-bot-linux-amd64
+            triage-bot-linux-amd64.sha256

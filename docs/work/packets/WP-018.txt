@@ -1,6 +1,6 @@
 ID: WP-018
 Title: Finalize README, troubleshooting, and performance notes
-Status: todo
+Status: done
 Priority: P2
 Depends_On: WP-011,WP-013
 Owner: codex
@@ -30,10 +30,10 @@ Implementation_Steps:
 4. Add runtime budget notes and expected timing breakdown.
 
 Acceptance_Criteria:
-- [ ] New user can configure action using docs only.
-- [ ] Common failure modes have concrete remediation steps.
-- [ ] Performance expectations are explicit and realistic.
-- [ ] Docs are consistent with current spec and code.
+- [x] New user can configure action using docs only.
+- [x] Common failure modes have concrete remediation steps.
+- [x] Performance expectations are explicit and realistic.
+- [x] Docs are consistent with current spec and code.
 
 Validation:
 - Command: manual docs review against `docs/spec.md`

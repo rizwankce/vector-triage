@@ -1,6 +1,6 @@
 ID: WP-012
 Title: Implement markdown response formatter
-Status: todo
+Status: done
 Priority: P1
 Depends_On: WP-004,WP-010
 Owner: codex
@@ -29,10 +29,10 @@ Implementation_Steps:
 4. Add snapshot-like tests for output variants.
 
 Acceptance_Criteria:
-- [ ] Marker is first line in non-empty output.
-- [ ] No-match case returns empty output.
-- [ ] Output includes correct percentages and status symbols.
-- [ ] Formatter tests pass.
+- [x] Marker is first line in non-empty output.
+- [x] No-match case returns empty output.
+- [x] Output includes correct percentages and status symbols.
+- [x] Formatter tests pass.
 
 Validation:
 - Command: `go test ./internal/respond/...`

@@ -1,6 +1,6 @@
 ID: WP-016
 Title: Add sqlite-vec integration tests with real DB file
-Status: todo
+Status: done
 Priority: P1
 Depends_On: WP-015
 Owner: codex
@@ -30,10 +30,10 @@ Implementation_Steps:
 4. Gate integration tests in CI job.
 
 Acceptance_Criteria:
-- [ ] Integration tests pass locally and in CI.
-- [ ] Vector search behavior matches expected nearest results.
-- [ ] Self-match and clamping behavior validated in integration context.
-- [ ] Migration tests pass on existing DB fixtures.
+- [x] Integration tests pass locally and in CI.
+- [x] Vector search behavior matches expected nearest results.
+- [x] Self-match and clamping behavior validated in integration context.
+- [x] Migration tests pass on existing DB fixtures.
 
 Validation:
 - Command: `go test ./internal/store/... -run Integration`

@@ -1,6 +1,6 @@
 ID: WP-009
 Title: Implement triage comment create/update/delete manager
-Status: todo
+Status: done
 Priority: P0
 Depends_On: WP-007
 Owner: codex
@@ -30,10 +30,10 @@ Implementation_Steps:
 4. Add tests for each branch of behavior.
 
 Acceptance_Criteria:
-- [ ] Exactly one bot triage comment exists per item over time.
-- [ ] Existing marker comment gets updated, not duplicated.
-- [ ] Old triage comment is deleted when matches disappear.
-- [ ] Comment manager tests pass.
+- [x] Exactly one bot triage comment exists per item over time.
+- [x] Existing marker comment gets updated, not duplicated.
+- [x] Old triage comment is deleted when matches disappear.
+- [x] Comment manager tests pass.
 
 Validation:
 - Command: `go test ./internal/github/... -run Comment`

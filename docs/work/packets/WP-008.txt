@@ -1,6 +1,6 @@
 ID: WP-008
 Title: Implement orphan-branch state pull/push manager
-Status: todo
+Status: done
 Priority: P0
 Depends_On: WP-007
 Owner: codex
@@ -30,10 +30,10 @@ Implementation_Steps:
 4. Add tests with git command stubs/mocks.
 
 Acceptance_Criteria:
-- [ ] First run without branch succeeds and starts empty DB.
-- [ ] Existing branch restores latest `index.db`.
-- [ ] Push updates branch with `[skip ci]` commit.
-- [ ] State manager tests pass.
+- [x] First run without branch succeeds and starts empty DB.
+- [x] Existing branch restores latest `index.db`.
+- [x] Push updates branch with `[skip ci]` commit.
+- [x] State manager tests pass.
 
 Validation:
 - Command: `go test ./internal/github/... -run State`

@@ -1,6 +1,6 @@
 ID: WP-003
 Title: Implement FTS search, query builder, and BM25 normalization
-Status: todo
+Status: done
 Priority: P0
 Depends_On: WP-001
 Owner: codex
@@ -30,10 +30,10 @@ Implementation_Steps:
 4. Add tests for query building and score normalization.
 
 Acceptance_Criteria:
-- [ ] FTS query builder handles special characters safely.
-- [ ] BM25 normalization matches spec formula.
-- [ ] Current item is filtered out from FTS results.
-- [ ] Tests cover empty and noisy input queries.
+- [x] FTS query builder handles special characters safely.
+- [x] BM25 normalization matches spec formula.
+- [x] Current item is filtered out from FTS results.
+- [x] Tests cover empty and noisy input queries.
 
 Validation:
 - Command: `go test ./internal/store/... -run FTS`

@@ -1,0 +1,48 @@
+Vector Triage Bot - Performance Notes
+
+Target Runtime Budget (per event)
+- Total: < 30s
+- Binary download: < 3s
+- State pull: < 5s
+- Embedding request: < 5s
+- Store search (vector + FTS + fusion): < 100ms
+- Comment upsert: < 2s
+- State push: < 5s
+
+Expected Scaling
+- Index growth is mostly linear with item count.
+- Typical repos remain practical with a single SQLite DB on orphan branch.
+- Search remains fast due to local in-process queries.
+
+Hot Path Breakdown
+1. Pull index DB from `index-branch`
+2. Parse event and gather PR metadata (files/diff if PR)
+3. Embed content via GitHub Models
+4. Query vector + FTS
+5. Fuse/rank/filter
+6. Upsert item/vector
+7. Upsert/delete triage comment
+8. Push updated DB
+
+Main Cost Drivers
+- Network latency to GitHub APIs (models/comments/pr metadata)
+- Git push/pull latency for state branch
+- Large PR diff fetch and diff truncation processing
+
+Tuning Levers
+- `max-results`: lower values reduce formatting and payload size.
+- `similarity-threshold`: higher values reduce comment/update churn.
+- `duplicate-threshold`: tune false-positive/false-negative balance.
+- Keep concurrency serialization enabled to avoid write contention.
+
+Operational Guidance
+- Do not run multiple independent triage jobs writing the same index branch.
+- Keep action pinned to release tags and avoid debug builds in production.
+- Prefer weekly E2E scheduled run for drift detection.
+
+When Runtime Exceeds Target
+1. Check GitHub API latency and rate limits in workflow logs.
+2. Verify state branch push/pull performance.
+3. Validate no runaway queue from missing concurrency lock.
+4. Inspect for repeated retries in embedder path.
+5. Confirm target repository has normal Actions runner availability.

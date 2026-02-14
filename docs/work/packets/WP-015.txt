@@ -1,6 +1,6 @@
 ID: WP-015
 Title: Add unit tests across all packages
-Status: todo
+Status: done
 Priority: P1
 Depends_On: WP-001..WP-012
 Owner: codex
@@ -33,10 +33,10 @@ Implementation_Steps:
 4. Ensure tests run fast in CI.
 
 Acceptance_Criteria:
-- [ ] Critical paths and edge cases have test coverage.
-- [ ] Self-match exclusion has direct tests.
-- [ ] No-match formatter and comment deletion transitions are covered.
-- [ ] Unit test suite passes reliably.
+- [x] Critical paths and edge cases have test coverage.
+- [x] Self-match exclusion has direct tests.
+- [x] No-match formatter and comment deletion transitions are covered.
+- [x] Unit test suite passes reliably.
 
 Validation:
 - Command: `go test ./...`

@@ -1,0 +1,93 @@
+Vector Triage Bot - E2E Runbook
+
+Purpose
+- Validate end-to-end triage behavior in a real repository with deterministic scenarios.
+- Confirm duplicate, similar, and no-match outcomes.
+
+Scope
+- Primary automated workflow: `.github/workflows/e2e.yml`
+- Primary scenarios: issue duplicate, issue similar, issue no-match
+- PR scenario: manual validation add-on (documented below)
+
+Prerequisites
+- Target repository has Vector Triage Bot workflow enabled.
+- Target repository workflow uses:
+  - `issues` events (`opened`, `edited`)
+  - `pull_request_target` events (`opened`, `synchronize`)
+- This repository has:
+  - Secret `E2E_TOKEN` with `repo` scope access to target repo
+  - Optional repo variable `E2E_REPO` in `owner/repo` format
+  - Optional repo variable `E2E_BASE_BRANCH` (defaults to `main`)
+
+Automated Run (Issues)
+1. Open Actions tab and run `E2E Validation` workflow manually.
+2. Set `target-repo` input if `E2E_REPO` repo variable is not set.
+3. Wait for completion (timeout is 30 minutes).
+4. Download artifacts:
+   - `issues.json`
+   - `duplicate-comments.json`
+   - `similar-comments.json`
+   - `nomatch-comments.json`
+   - `summary.md`
+
+Expected Outcomes
+- Duplicate scenario:
+  - candidate issue has a triage comment containing marker `<!-- triage-bot:v1 -->`
+  - triage comment contains `Possible duplicate`
+- Similar scenario:
+  - candidate issue has a triage comment containing marker `<!-- triage-bot:v1 -->`
+  - triage comment contains `Similar items found`
+- No-match scenario:
+  - candidate issue has zero triage comments with marker `<!-- triage-bot:v1 -->`
+
+Pass/Fail Checklist
+- [ ] Workflow completed successfully
+- [ ] Duplicate scenario passed
+- [ ] Similar scenario passed
+- [ ] No-match scenario passed
+- [ ] Artifact bundle uploaded for audit/debug
+
+Manual PR Add-On Scenario
+Purpose: verify `pull_request_target` path and PR ingestion behavior.
+
+1. In target repo, create PR A:
+   - title: `E2E PR Seed: login timeout flow`
+   - body: describe token refresh timeout behavior
+   - files: include at least one file path with `auth`/`login` context
+2. Create PR B with similar title/body/files.
+3. Verify PR B gets triage comment with marker and similar/duplicate classification.
+4. Edit PR B to unrelated content and push synchronize event.
+5. Verify triage comment updates or is removed if no matches remain.
+
+Failure Triage Guide
+- No triage comment appears:
+  - Confirm target repo workflow permissions include:
+    - `contents: write`
+    - `issues: write`
+    - `pull-requests: write`
+    - `models: read`
+  - Confirm target workflow references released action version.
+  - Confirm target repo has no blocked or failing Actions queue.
+- Duplicate/similar check fails intermittently:
+  - Re-run once to eliminate queue/timing noise.
+  - Inspect artifacts for comment body shape and marker presence.
+  - Validate model API availability and rate-limit logs in target workflow run.
+
+Rollback Guidance
+- If E2E run fails after creating artifacts/data:
+  - Close all seeded issues using numbers in `issues.json`.
+  - Add `triage-e2e` label filter to batch-close if needed.
+  - If triage comments were incorrect, link failing run ID in issue for follow-up.
+- If target repo index appears polluted:
+  - Delete/recreate target repo `triage-index` branch to reset state.
+  - Re-run baseline seed scenario to rehydrate index.
+
+Cleanup
+- Automated workflow closes seeded issues at end (`if: always()`).
+- Manual cleanup fallback:
+  - close all issue numbers from `issues.json`
+  - delete `triage-e2e` label if no longer needed
+
+Notes
+- Keep E2E isolated from required CI checks to avoid flaky production gating.
+- Use weekly schedule for drift detection and manual dispatch for release validation.

@@ -1,6 +1,6 @@
 ID: WP-010
 Title: Implement engine orchestration flow
-Status: todo
+Status: done
 Priority: P0
 Depends_On: WP-004,WP-005,WP-006,WP-008,WP-009
 Owner: codex
@@ -31,10 +31,10 @@ Implementation_Steps:
 4. Add integration-style engine tests with mocks.
 
 Acceptance_Criteria:
-- [ ] Engine flow follows spec order and handles no-match case silently.
-- [ ] Self-match is excluded for edited/synchronize events.
-- [ ] Comment is created/updated/deleted correctly based on fused output.
-- [ ] Engine tests pass.
+- [x] Engine flow follows spec order and handles no-match case silently.
+- [x] Self-match is excluded for edited/synchronize events.
+- [x] Comment is created/updated/deleted correctly based on fused output.
+- [x] Engine tests pass.
 
 Validation:
 - Command: `go test ./internal/engine/...`

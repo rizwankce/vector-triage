@@ -1,0 +1,53 @@
+name: 'Vector Triage Bot'
+description: 'Zero-config duplicate detection for Issues and Pull Requests'
+author: 'rizwankce'
+
+inputs:
+  similarity-threshold:
+    description: 'Minimum similarity to show as related (0.0 - 1.0)'
+    required: false
+    default: '0.75'
+  duplicate-threshold:
+    description: 'Minimum similarity to flag as duplicate (0.0 - 1.0)'
+    required: false
+    default: '0.92'
+  max-results:
+    description: 'Maximum number of similar items to show'
+    required: false
+    default: '5'
+  index-branch:
+    description: 'Branch name for storing the triage index'
+    required: false
+    default: 'triage-index'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download triage binary
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        VERSION="v1.0.0"
+        BINARY="triage-bot-linux-amd64"
+        BASE_URL="https://github.com/rizwankce/vector-triage/releases/download/${VERSION}"
+
+        curl -fsSL "$BASE_URL/$BINARY" -o "/tmp/$BINARY"
+        curl -fsSL "$BASE_URL/$BINARY.sha256" -o "/tmp/$BINARY.sha256"
+        (cd /tmp && sha256sum -c "$BINARY.sha256")
+
+        mv "/tmp/$BINARY" /tmp/triage-bot
+        chmod +x /tmp/triage-bot
+
+    - name: Run triage
+      shell: bash
+      run: /tmp/triage-bot
+      env:
+        INPUT_SIMILARITY_THRESHOLD: ${{ inputs.similarity-threshold }}
+        INPUT_DUPLICATE_THRESHOLD: ${{ inputs.duplicate-threshold }}
+        INPUT_MAX_RESULTS: ${{ inputs.max-results }}
+        INPUT_INDEX_BRANCH: ${{ inputs.index-branch }}
+
+branding:
+  icon: 'search'
+  color: 'blue'

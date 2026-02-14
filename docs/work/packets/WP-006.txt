@@ -1,6 +1,6 @@
 ID: WP-006
 Title: Implement GitHub Models embedder with retries and truncation
-Status: todo
+Status: done
 Priority: P0
 Depends_On: none
 Owner: codex
@@ -31,10 +31,10 @@ Implementation_Steps:
 4. Add tests with mocked HTTP server for retries and failures.
 
 Acceptance_Criteria:
-- [ ] Embedder returns 1536-dimension vectors on success.
-- [ ] Retries honor retry headers/backoff and stop after max attempts.
-- [ ] Truncation is applied before request send.
-- [ ] Embedder tests pass.
+- [x] Embedder returns 1536-dimension vectors on success.
+- [x] Retries honor retry headers/backoff and stop after max attempts.
+- [x] Truncation is applied before request send.
+- [x] Embedder tests pass.
 
 Validation:
 - Command: `go test ./internal/embed/...`

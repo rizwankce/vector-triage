@@ -1,0 +1,192 @@
+name: E2E Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      target-repo:
+        description: "Target repository in owner/repo format"
+        required: false
+        type: string
+      base-branch:
+        description: "Target default branch"
+        required: false
+        default: "main"
+        type: string
+  schedule:
+    - cron: "23 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ secrets.E2E_TOKEN }}
+      TARGET_REPO_INPUT: ${{ github.event.inputs.target-repo }}
+      TARGET_REPO_VAR: ${{ vars.E2E_REPO }}
+      BASE_BRANCH_INPUT: ${{ github.event.inputs.base-branch }}
+      BASE_BRANCH_VAR: ${{ vars.E2E_BASE_BRANCH }}
+    steps:
+      - name: Validate E2E config
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::error::Missing E2E_TOKEN secret"
+            exit 1
+          fi
+
+          TARGET_REPO="${TARGET_REPO_INPUT:-${TARGET_REPO_VAR:-}}"
+          if [ -z "${TARGET_REPO}" ]; then
+            echo "::error::Missing target repo. Use workflow input or repo variable E2E_REPO."
+            exit 1
+          fi
+
+          BASE_BRANCH="${BASE_BRANCH_INPUT:-${BASE_BRANCH_VAR:-main}}"
+          RUN_ID="e2e-$(date -u +%Y%m%d%H%M%S)"
+
+          echo "TARGET_REPO=${TARGET_REPO}" >> "${GITHUB_ENV}"
+          echo "BASE_BRANCH=${BASE_BRANCH}" >> "${GITHUB_ENV}"
+          echo "E2E_RUN_ID=${RUN_ID}" >> "${GITHUB_ENV}"
+
+      - name: Create deterministic issue scenarios
+        run: |
+          set -euo pipefail
+
+          mkdir -p e2e-artifacts
+          gh api -X POST "repos/${TARGET_REPO}/labels" \
+            -f name="triage-e2e" \
+            -f color="1d76db" \
+            -f description="vector-triage E2E issues" >/dev/null 2>&1 || true
+
+          create_issue() {
+            local title="$1"
+            local body="$2"
+            gh issue create \
+              -R "${TARGET_REPO}" \
+              --title "${title}" \
+              --body "${body}" \
+              --label "triage-e2e"
+          }
+
+          seed_dup_url="$(create_issue \
+            "E2E Seed Duplicate ${E2E_RUN_ID}: login timeout in dashboard" \
+            "Users report dashboard login timing out after 30 seconds when session refresh fails.")"
+
+          seed_sim_url="$(create_issue \
+            "E2E Seed Similar ${E2E_RUN_ID}: CSV export unicode bug" \
+            "CSV export drops accented characters and emoji in customer names.")"
+
+          duplicate_url="$(create_issue \
+            "E2E Candidate Duplicate ${E2E_RUN_ID}: dashboard login timeout at 30s" \
+            "Duplicate behavior: dashboard login expires around 30 seconds when token refresh is missed.")"
+
+          similar_url="$(create_issue \
+            "E2E Candidate Similar ${E2E_RUN_ID}: export file encoding issues" \
+            "Exported spreadsheets lose unicode characters in names and notes.")"
+
+          nomatch_url="$(create_issue \
+            "E2E Candidate No Match ${E2E_RUN_ID}: dark mode sidebar spacing" \
+            "Sidebar in dark mode has extra left padding only on mobile landscape.")"
+
+          cat > e2e-artifacts/issues.json <<EOF
+          {
+            "seed_duplicate": ${seed_dup_url##*/},
+            "seed_similar": ${seed_sim_url##*/},
+            "candidate_duplicate": ${duplicate_url##*/},
+            "candidate_similar": ${similar_url##*/},
+            "candidate_nomatch": ${nomatch_url##*/}
+          }
+          EOF
+
+      - name: Wait for triage comment processing
+        run: |
+          set -euo pipefail
+
+          mkdir -p e2e-artifacts
+          dup_issue="$(jq -r '.candidate_duplicate' e2e-artifacts/issues.json)"
+          sim_issue="$(jq -r '.candidate_similar' e2e-artifacts/issues.json)"
+          nomatch_issue="$(jq -r '.candidate_nomatch' e2e-artifacts/issues.json)"
+
+          wait_for_marker() {
+            local issue_number="$1"
+            local timeout_secs=420
+            local sleep_secs=15
+            local elapsed=0
+
+            while [ "${elapsed}" -lt "${timeout_secs}" ]; do
+              marker_count="$(gh api "repos/${TARGET_REPO}/issues/${issue_number}/comments" \
+                --jq 'map(select(.body | contains("<!-- triage-bot:v1 -->"))) | length')"
+              if [ "${marker_count}" -gt 0 ]; then
+                return 0
+              fi
+              sleep "${sleep_secs}"
+              elapsed=$((elapsed + sleep_secs))
+            done
+            return 1
+          }
+
+          wait_for_marker "${dup_issue}"
+          wait_for_marker "${sim_issue}"
+
+          sleep 60
+          gh api "repos/${TARGET_REPO}/issues/${dup_issue}/comments" > e2e-artifacts/duplicate-comments.json
+          gh api "repos/${TARGET_REPO}/issues/${sim_issue}/comments" > e2e-artifacts/similar-comments.json
+          gh api "repos/${TARGET_REPO}/issues/${nomatch_issue}/comments" > e2e-artifacts/nomatch-comments.json
+
+      - name: Validate duplicate, similar, and no-match outcomes
+        run: |
+          set -euo pipefail
+
+          dup_marker="$(jq '[.[] | select(.body | contains("<!-- triage-bot:v1 -->") and contains("Possible duplicate"))] | length' e2e-artifacts/duplicate-comments.json)"
+          sim_marker="$(jq '[.[] | select(.body | contains("<!-- triage-bot:v1 -->") and contains("Similar items found"))] | length' e2e-artifacts/similar-comments.json)"
+          nomatch_marker="$(jq '[.[] | select(.body | contains("<!-- triage-bot:v1 -->"))] | length' e2e-artifacts/nomatch-comments.json)"
+
+          if [ "${dup_marker}" -lt 1 ]; then
+            echo "::error::Duplicate scenario did not produce a duplicate warning comment."
+            exit 1
+          fi
+
+          if [ "${sim_marker}" -lt 1 ]; then
+            echo "::error::Similar scenario did not produce a similar-items triage comment."
+            exit 1
+          fi
+
+          if [ "${nomatch_marker}" -ne 0 ]; then
+            echo "::error::No-match scenario unexpectedly produced a triage comment."
+            exit 1
+          fi
+
+          {
+            echo "# E2E Validation Summary"
+            echo ""
+            echo "- Target repo: ${TARGET_REPO}"
+            echo "- Duplicate scenario: PASS"
+            echo "- Similar scenario: PASS"
+            echo "- No-match scenario: PASS"
+          } > e2e-artifacts/summary.md
+
+          cat e2e-artifacts/summary.md >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload E2E artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-validation-${{ github.run_id }}
+          path: e2e-artifacts
+          if-no-files-found: warn
+
+      - name: Cleanup seeded issues
+        if: always()
+        run: |
+          set -euo pipefail
+
+          if [ ! -f e2e-artifacts/issues.json ]; then
+            exit 0
+          fi
+
+          for issue_number in $(jq -r '.[]' e2e-artifacts/issues.json); do
+            gh issue close "${issue_number}" -R "${TARGET_REPO}" --reason "not planned" >/dev/null 2>&1 || true
+          done

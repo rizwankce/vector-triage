@@ -1,0 +1,105 @@
+Vector Triage Bot - Troubleshooting
+
+1) "missing required env GITHUB_*"
+Symptom
+- Workflow warning like `missing required env GITHUB_TOKEN` or repository/event envs.
+
+Cause
+- Action is running outside a standard GitHub Actions context or environment is overridden.
+
+Fix
+- Run only in GitHub Actions.
+- Ensure job does not unset default GitHub env vars.
+
+2) "parse INPUT_*" errors
+Symptom
+- Warning includes:
+  - `parse INPUT_SIMILARITY_THRESHOLD`
+  - `parse INPUT_DUPLICATE_THRESHOLD`
+  - `INPUT_MAX_RESULTS must be between 1 and 20`
+
+Cause
+- Input value is malformed or outside range.
+
+Fix
+- Use numeric strings only.
+- Keep thresholds in [0.0, 1.0].
+- Keep `max-results` in [1, 20].
+
+3) No triage comments appear
+Symptom
+- Issues/PRs are opened but no bot comment is posted.
+
+Checks
+- Confirm workflow trigger:
+  - `issues: [opened, edited]`
+  - `pull_request_target: [opened, synchronize]`
+- Confirm permissions:
+  - `contents: write`
+  - `issues: write`
+  - `pull-requests: write`
+  - `models: read`
+- Confirm this is not first-run/empty-index behavior.
+- Confirm there are similar items above threshold.
+
+Fix
+- Seed a known duplicate test issue.
+- Lower similarity threshold temporarily for diagnostics (for example `0.70`).
+
+4) GitHub Models embedding failures
+Symptom
+- Warning contains embed/API failure.
+
+Cause
+- `models: read` permission missing, transient rate limits, or endpoint/network issue.
+
+Fix
+- Add `models: read` in workflow permissions.
+- Re-run workflow (embedder retries with backoff).
+- Inspect run logs for repeated 429/5xx patterns.
+
+5) State branch push/pull failures
+Symptom
+- Warning contains `pull state:` or `push state:`.
+
+Cause
+- Token lacks write permission, branch protection rules, or transient git error.
+
+Fix
+- Ensure workflow has `contents: write`.
+- Do not protect the state branch (`triage-index`) with restrictive rules.
+- Keep workflow concurrency lock:
+  - `group: triage-index`
+  - `cancel-in-progress: false`
+
+6) sqlite/sqlite-vec errors
+Symptom
+- Warning contains `open store`, migration errors, or vector query errors.
+
+Cause
+- Corrupt `index.db`, extension mismatch, or unexpected SQLite runtime behavior.
+
+Fix
+- Delete/reset `triage-index` branch to rebuild index from future events.
+- Re-run workflow and confirm new DB bootstraps.
+- For local tests, install SQLite build dependencies (`gcc`, `libsqlite3-dev` on Ubuntu).
+
+7) PR security concerns
+Symptom
+- Concern that fork PR code may execute with write token.
+
+Safety rules
+- Do not checkout PR branch in triage workflow.
+- Do not execute PR content.
+- Keep `pull_request_target` and treat PR metadata as untrusted text.
+
+8) Stale triage comment
+Symptom
+- Old triage report remains after content changed.
+
+Cause
+- Update run may have failed before comment update/delete.
+
+Fix
+- Re-run workflow for that issue/PR.
+- Bot updates existing marker comment or deletes it when matches disappear.
