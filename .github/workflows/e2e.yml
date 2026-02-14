@@ -78,13 +78,15 @@ jobs:
             local elapsed=0
 
             while [ "${elapsed}" -lt "${timeout_secs}" ]; do
-              run_line="$(gh run list \
+              runs_json="$(gh run list \
                 --repo "${TARGET_REPO}" \
                 --workflow triage.yml \
                 --event issues \
                 --limit 50 \
-                --json displayTitle,status,conclusion \
-                --jq --arg t "${issue_title}" 'map(select(.displayTitle == $t)) | first | if . == null then "none" else "\(.status)|\(.conclusion // \"\")" end')"
+                --json displayTitle,status,conclusion)"
+
+              run_line="$(echo "${runs_json}" | jq -r --arg t "${issue_title}" \
+                'map(select(.displayTitle == $t)) | first | if . == null then "none" else "\(.status)|\(.conclusion // \"\")" end')"
 
               if [ "${run_line}" != "none" ]; then
                 status="${run_line%%|*}"
