@@ -108,10 +108,11 @@ jobs:
             return 1
           }
 
-          seed_dup_title="E2E Seed Duplicate ${E2E_RUN_ID}: login timeout in dashboard"
+          seed_dup_title="E2E Duplicate ${E2E_RUN_ID}: login timeout in dashboard [seed]"
+          seed_dup_body="Users report dashboard login timing out after 30 seconds when session refresh fails. The error appears after token renewal is skipped once, then every next login request returns unauthorized until manual refresh."
           seed_dup_url="$(create_issue \
             "${seed_dup_title}" \
-            "Users report dashboard login timing out after 30 seconds when session refresh fails.")"
+            "${seed_dup_body}")"
           wait_for_issue_run_success "${seed_dup_title}"
 
           seed_sim_title="E2E Seed Similar ${E2E_RUN_ID}: CSV export unicode bug"
@@ -120,10 +121,10 @@ jobs:
             "CSV export drops accented characters and emoji in customer names.")"
           wait_for_issue_run_success "${seed_sim_title}"
 
-          duplicate_title="E2E Candidate Duplicate ${E2E_RUN_ID}: dashboard login timeout at 30s"
+          duplicate_title="E2E Duplicate ${E2E_RUN_ID}: login timeout in dashboard [candidate]"
           duplicate_url="$(create_issue \
             "${duplicate_title}" \
-            "Duplicate behavior: dashboard login expires around 30 seconds when token refresh is missed.")"
+            "${seed_dup_body}")"
           wait_for_issue_run_success "${duplicate_title}"
 
           similar_title="E2E Candidate Similar ${E2E_RUN_ID}: export file encoding issues"
