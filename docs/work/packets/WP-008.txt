@@ -1,0 +1,43 @@
+ID: WP-008
+Title: Implement orphan-branch state pull/push manager
+Status: todo
+Priority: P0
+Depends_On: WP-007
+Owner: codex
+Estimate: 120m
+
+Goal:
+- Persist `index.db` across action runs using a dedicated orphan branch.
+
+Scope_In:
+- Pull flow for first-run and existing branch cases.
+- Push flow with orphan commit and force-push.
+- Handle missing branch and corrupted DB fallback paths.
+- Keep all git operations in temp directories.
+
+Scope_Out:
+- Search, embedding, and comment formatting.
+
+Files_To_Touch:
+- internal/github/state.go
+- internal/github/client.go
+- internal/github/client_test.go
+
+Implementation_Steps:
+1. Implement pull logic with shallow fetch and file checkout.
+2. Implement push logic with orphan checkout and single-file commit.
+3. Add branch-missing and corruption handling behavior.
+4. Add tests with git command stubs/mocks.
+
+Acceptance_Criteria:
+- [ ] First run without branch succeeds and starts empty DB.
+- [ ] Existing branch restores latest `index.db`.
+- [ ] Push updates branch with `[skip ci]` commit.
+- [ ] State manager tests pass.
+
+Validation:
+- Command: `go test ./internal/github/... -run State`
+- Expected: pull/push flow tests pass.
+
+Notes:
+- Never run destructive git commands in repository workspace.

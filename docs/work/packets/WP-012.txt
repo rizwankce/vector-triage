@@ -1,0 +1,42 @@
+ID: WP-012
+Title: Implement markdown response formatter
+Status: todo
+Priority: P1
+Depends_On: WP-004,WP-010
+Owner: codex
+Estimate: 75m
+
+Goal:
+- Render consistent triage markdown output from fused results.
+
+Scope_In:
+- Always include marker as first line.
+- Duplicate warning block for top duplicate hit.
+- Similar-items details table with status icons.
+- Return empty string when no items meet threshold.
+
+Scope_Out:
+- GitHub API comment create/update/delete behavior.
+
+Files_To_Touch:
+- internal/respond/formatter.go
+- internal/respond/formatter_test.go
+
+Implementation_Steps:
+1. Define formatter input model.
+2. Implement duplicate section and table rendering.
+3. Add score formatting (`displaySimilarity * 100`, rounded).
+4. Add snapshot-like tests for output variants.
+
+Acceptance_Criteria:
+- [ ] Marker is first line in non-empty output.
+- [ ] No-match case returns empty output.
+- [ ] Output includes correct percentages and status symbols.
+- [ ] Formatter tests pass.
+
+Validation:
+- Command: `go test ./internal/respond/...`
+- Expected: markdown output tests pass.
+
+Notes:
+- Keep output deterministic to avoid noisy comment churn.

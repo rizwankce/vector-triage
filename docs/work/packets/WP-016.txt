@@ -1,0 +1,43 @@
+ID: WP-016
+Title: Add sqlite-vec integration tests with real DB file
+Status: todo
+Priority: P1
+Depends_On: WP-015
+Owner: codex
+Estimate: 120m
+
+Goal:
+- Validate store behavior against real sqlite-vec extension behavior.
+
+Scope_In:
+- Use temporary on-disk SQLite DB in tests.
+- Insert known vectors and verify nearest-neighbor retrieval.
+- Validate two-step vector query regression behavior.
+- Validate migration behavior on file-based DB.
+
+Scope_Out:
+- Live GitHub API integration tests.
+
+Files_To_Touch:
+- internal/store/integration_test.go
+- internal/store/testdata/*
+- .github/workflows/test.yml
+
+Implementation_Steps:
+1. Create integration test harness for file-backed DB.
+2. Seed deterministic vectors and metadata.
+3. Assert search ordering and score bounds.
+4. Gate integration tests in CI job.
+
+Acceptance_Criteria:
+- [ ] Integration tests pass locally and in CI.
+- [ ] Vector search behavior matches expected nearest results.
+- [ ] Self-match and clamping behavior validated in integration context.
+- [ ] Migration tests pass on existing DB fixtures.
+
+Validation:
+- Command: `go test ./internal/store/... -run Integration`
+- Expected: integration tests pass with sqlite-vec loaded.
+
+Notes:
+- Skip gracefully with clear message if sqlite-vec is unavailable.

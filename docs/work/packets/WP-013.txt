@@ -1,0 +1,43 @@
+ID: WP-013
+Title: Implement composite action and release workflow with checksums
+Status: todo
+Priority: P1
+Depends_On: WP-011
+Owner: codex
+Estimate: 120m
+
+Goal:
+- Ship a consumable action that downloads a trusted prebuilt binary.
+
+Scope_In:
+- Create `action.yml` composite action.
+- Download binary from immutable tag.
+- Download and verify `.sha256` file before execution.
+- Add release workflow to publish binary and checksum assets.
+
+Scope_Out:
+- Runtime engine behavior and search quality.
+
+Files_To_Touch:
+- action.yml
+- .github/workflows/release.yml
+- README.md
+
+Implementation_Steps:
+1. Add composite action steps with strict shell flags.
+2. Add checksum verification step.
+3. Add release workflow build + checksum generation + asset upload.
+4. Document release/tag process.
+
+Acceptance_Criteria:
+- [ ] Action runs binary only after checksum verification passes.
+- [ ] Release workflow publishes both binary and checksum.
+- [ ] Action inputs map to correct `INPUT_*` env vars.
+- [ ] Action lint/validation passes.
+
+Validation:
+- Command: `act -W .github/workflows/release.yml -n` or CI dry run
+- Expected: workflow parses and assets list includes checksum file.
+
+Notes:
+- Prefer immutable version tag references in action default config.

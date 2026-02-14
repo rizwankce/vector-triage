@@ -1,0 +1,43 @@
+ID: WP-017
+Title: Add E2E validation workflow and runbook
+Status: todo
+Priority: P2
+Depends_On: WP-013,WP-016
+Owner: codex
+Estimate: 120m
+
+Goal:
+- Provide repeatable end-to-end verification against a test repository.
+
+Scope_In:
+- Document E2E scenario with issues and pull requests.
+- Add manual/scheduled workflow to run E2E checks.
+- Capture expected comment outcomes for duplicate/similar/no-match cases.
+- Add rollback guidance for failed E2E runs.
+
+Scope_Out:
+- Production auto-remediation logic.
+
+Files_To_Touch:
+- docs/e2e-runbook.txt
+- .github/workflows/e2e.yml
+- README.md
+
+Implementation_Steps:
+1. Define deterministic test data and expected outputs.
+2. Add E2E workflow scaffold and secrets/config expectations.
+3. Write runbook for setup, run, verify, and cleanup.
+4. Add checklist for pass/fail criteria.
+
+Acceptance_Criteria:
+- [ ] E2E runbook can be followed without tribal knowledge.
+- [ ] Workflow captures artifacts/logs for triage outcomes.
+- [ ] Duplicate and similar scenarios are both validated.
+- [ ] Cleanup steps are documented.
+
+Validation:
+- Command: manual run of `.github/workflows/e2e.yml`
+- Expected: workflow completes and expected triage comments appear.
+
+Notes:
+- Keep this isolated from main CI to avoid flaky gate failures.

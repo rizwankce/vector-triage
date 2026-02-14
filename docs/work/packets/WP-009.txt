@@ -1,0 +1,43 @@
+ID: WP-009
+Title: Implement triage comment create/update/delete manager
+Status: todo
+Priority: P0
+Depends_On: WP-007
+Owner: codex
+Estimate: 90m
+
+Goal:
+- Ensure idempotent triage comments on issues and pull requests.
+
+Scope_In:
+- Locate existing bot comment via hidden marker.
+- Create new comment when no marker exists.
+- Update existing comment when content changes.
+- Delete stale comment when new match set is empty.
+
+Scope_Out:
+- Markdown generation and ranking logic.
+
+Files_To_Touch:
+- internal/github/comment.go
+- internal/github/client.go
+- internal/github/client_test.go
+
+Implementation_Steps:
+1. Implement marker-based comment discovery helper.
+2. Add upsert behavior: create vs update.
+3. Add delete behavior for empty-result transitions.
+4. Add tests for each branch of behavior.
+
+Acceptance_Criteria:
+- [ ] Exactly one bot triage comment exists per item over time.
+- [ ] Existing marker comment gets updated, not duplicated.
+- [ ] Old triage comment is deleted when matches disappear.
+- [ ] Comment manager tests pass.
+
+Validation:
+- Command: `go test ./internal/github/... -run Comment`
+- Expected: create/update/delete behavior validated.
+
+Notes:
+- Marker must always be first line of generated comment body.

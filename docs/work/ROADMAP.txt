@@ -1,0 +1,35 @@
+Project Roadmap: Vector Triage Bot
+
+Phase 1 - Core Data and Search:
+- WP-001: schema and migrations
+- WP-002: sqlite-vec vector search
+- WP-003: FTS search and BM25 normalization
+- WP-004: RRF fusion and display similarity
+
+Phase 2 - Inputs and External Integrations:
+- WP-005: ingest issue/PR content
+- WP-006: GitHub Models embedder
+- WP-007: GitHub event parsing and client wrappers
+- WP-008: orphan-branch state manager
+- WP-009: triage comment manager
+
+Phase 3 - Orchestration and UX:
+- WP-010: engine flow
+- WP-011: CLI entrypoint and config handling
+- WP-012: markdown formatter
+
+Phase 4 - Packaging and Security:
+- WP-013: composite action and release assets
+- WP-014: pull_request_target hardening and binary integrity
+
+Phase 5 - Quality and Ship:
+- WP-015: package-level unit tests
+- WP-016: sqlite-vec integration tests
+- WP-017: E2E validation and runbook
+- WP-018: README, troubleshooting, and performance notes
+
+Definition of Done:
+- Packet acceptance criteria checked
+- Validation commands pass
+- Packet status moved to done in TODO.txt
+- Packet ID appended to DONE.txt

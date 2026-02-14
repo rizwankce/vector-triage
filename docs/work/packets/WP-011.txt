@@ -1,0 +1,43 @@
+ID: WP-011
+Title: Implement CLI entrypoint, config parsing, and non-fatal error policy
+Status: todo
+Priority: P1
+Depends_On: WP-010
+Owner: codex
+Estimate: 120m
+
+Goal:
+- Create runnable binary entrypoint used by the GitHub Action.
+
+Scope_In:
+- Parse required GitHub env vars and action input env vars.
+- Initialize state manager, store, embedder, and engine.
+- Execute pull -> handle -> push flow.
+- Emit warning annotations and exit 0 for recoverable failures.
+
+Scope_Out:
+- Composite action YAML and release CI.
+
+Files_To_Touch:
+- cmd/triage/main.go
+- internal/engine/engine.go
+- README.md
+
+Implementation_Steps:
+1. Add config loader with sane defaults and bounds checks.
+2. Wire up startup dependencies and execution flow.
+3. Apply non-fatal error handling and warning log format.
+4. Add focused tests for config parsing and error policy.
+
+Acceptance_Criteria:
+- [ ] Binary runs with only required GitHub env vars and defaults.
+- [ ] Recoverable failures log `::warning::` and exit 0.
+- [ ] Panic path exits non-zero.
+- [ ] CLI tests pass.
+
+Validation:
+- Command: `go test ./cmd/triage/...`
+- Expected: config and lifecycle tests pass.
+
+Notes:
+- Keep config parsing strict enough to catch invalid thresholds.

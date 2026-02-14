@@ -1,0 +1,43 @@
+ID: WP-003
+Title: Implement FTS search, query builder, and BM25 normalization
+Status: todo
+Priority: P0
+Depends_On: WP-001
+Owner: codex
+Estimate: 90m
+
+Goal:
+- Add full-text retrieval to complement vector search.
+
+Scope_In:
+- Build FTS5 query generator from natural text.
+- Execute FTS search joined with items metadata.
+- Normalize BM25 to ftsScore in [0,1].
+- Exclude current item ID in SQL.
+
+Scope_Out:
+- Fusion ranking and duplicate thresholding.
+
+Files_To_Touch:
+- internal/store/fts.go
+- internal/store/search.go
+- internal/store/search_test.go
+
+Implementation_Steps:
+1. Implement `buildFTS5Query` with token cleanup and escaping.
+2. Add FTS query execution returning metadata + normalized score.
+3. Add exclusion clause for current item ID.
+4. Add tests for query building and score normalization.
+
+Acceptance_Criteria:
+- [ ] FTS query builder handles special characters safely.
+- [ ] BM25 normalization matches spec formula.
+- [ ] Current item is filtered out from FTS results.
+- [ ] Tests cover empty and noisy input queries.
+
+Validation:
+- Command: `go test ./internal/store/... -run FTS`
+- Expected: FTS unit tests pass.
+
+Notes:
+- Keep normalization monotonic and query-independent.

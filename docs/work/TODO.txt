@@ -1,0 +1,25 @@
+Format:
+ID | Priority | Status | Depends_On | Title
+
+Statuses:
+todo | in_progress | blocked(<ID>) | done
+
+Backlog:
+WP-001 | P0 | done | none | Scaffold store schema and migrations
+WP-002 | P0 | todo | WP-001 | Implement sqlite-vec loading and two-step vector search
+WP-003 | P0 | todo | WP-001 | Implement FTS search, query builder, and BM25 normalization
+WP-004 | P0 | blocked(WP-002) | WP-002,WP-003 | Implement RRF fusion and display similarity model
+WP-005 | P0 | todo | none | Implement ingest pipeline for issues and pull requests
+WP-006 | P0 | todo | none | Implement GitHub Models embedder with retries and truncation
+WP-007 | P0 | todo | none | Implement GitHub event parsing and API client wrappers
+WP-008 | P0 | blocked(WP-007) | WP-007 | Implement orphan-branch state pull/push manager
+WP-009 | P0 | blocked(WP-007) | WP-007 | Implement triage comment create/update/delete manager
+WP-010 | P0 | blocked(WP-004) | WP-004,WP-005,WP-006,WP-008,WP-009 | Implement engine orchestration flow
+WP-011 | P1 | blocked(WP-010) | WP-010 | Implement CLI entrypoint, config parsing, and non-fatal error policy
+WP-012 | P1 | blocked(WP-010) | WP-004,WP-010 | Implement markdown response formatter
+WP-013 | P1 | blocked(WP-011) | WP-011 | Implement composite action and release workflow with checksums
+WP-014 | P1 | blocked(WP-013) | WP-013 | Apply pull_request_target security hardening
+WP-015 | P1 | blocked(WP-010) | WP-001..WP-012 | Add unit tests across all packages
+WP-016 | P1 | blocked(WP-015) | WP-015 | Add sqlite-vec integration tests with real DB file
+WP-017 | P2 | blocked(WP-016) | WP-013,WP-016 | Add E2E validation workflow and runbook
+WP-018 | P2 | blocked(WP-013) | WP-011,WP-013 | Finalize README, troubleshooting, and performance notes

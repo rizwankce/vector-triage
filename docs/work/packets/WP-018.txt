@@ -1,0 +1,43 @@
+ID: WP-018
+Title: Finalize README, troubleshooting, and performance notes
+Status: todo
+Priority: P2
+Depends_On: WP-011,WP-013
+Owner: codex
+Estimate: 90m
+
+Goal:
+- Ship operator-facing documentation for setup, behavior, and debugging.
+
+Scope_In:
+- Quick start workflow snippet and permissions.
+- Configuration reference and defaults.
+- Troubleshooting guide for common failures.
+- Performance target notes and tuning guidance.
+
+Scope_Out:
+- Feature implementation work.
+
+Files_To_Touch:
+- README.md
+- docs/troubleshooting.txt
+- docs/perf-notes.txt
+
+Implementation_Steps:
+1. Document install and first-run behavior.
+2. Add config table and environment mapping.
+3. Add troubleshooting sections for API, state branch, and sqlite errors.
+4. Add runtime budget notes and expected timing breakdown.
+
+Acceptance_Criteria:
+- [ ] New user can configure action using docs only.
+- [ ] Common failure modes have concrete remediation steps.
+- [ ] Performance expectations are explicit and realistic.
+- [ ] Docs are consistent with current spec and code.
+
+Validation:
+- Command: manual docs review against `docs/spec.md`
+- Expected: no contradictions across setup, behavior, and defaults.
+
+Notes:
+- Keep examples copy-paste ready.

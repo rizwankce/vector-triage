@@ -1,0 +1,44 @@
+ID: WP-010
+Title: Implement engine orchestration flow
+Status: todo
+Priority: P0
+Depends_On: WP-004,WP-005,WP-006,WP-008,WP-009
+Owner: codex
+Estimate: 150m
+
+Goal:
+- Wire all components into the canonical triage flow.
+
+Scope_In:
+- Ingest event content.
+- Embed and run vector + FTS searches.
+- Exclude self and fuse results.
+- Upsert store state.
+- Upsert/delete triage comment.
+
+Scope_Out:
+- CLI env parsing and action packaging.
+
+Files_To_Touch:
+- internal/engine/engine.go
+- internal/engine/engine_test.go
+- internal/store/store.go
+
+Implementation_Steps:
+1. Define engine dependencies and constructor.
+2. Implement `Handle` sequence with non-fatal error returns upward.
+3. Ensure self-ID is passed into both search paths.
+4. Add integration-style engine tests with mocks.
+
+Acceptance_Criteria:
+- [ ] Engine flow follows spec order and handles no-match case silently.
+- [ ] Self-match is excluded for edited/synchronize events.
+- [ ] Comment is created/updated/deleted correctly based on fused output.
+- [ ] Engine tests pass.
+
+Validation:
+- Command: `go test ./internal/engine/...`
+- Expected: orchestrator tests pass for issue and PR flows.
+
+Notes:
+- Keep side effects behind interfaces to simplify testing.

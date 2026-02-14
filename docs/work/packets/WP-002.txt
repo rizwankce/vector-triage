@@ -1,0 +1,44 @@
+ID: WP-002
+Title: Implement sqlite-vec loading and two-step vector search
+Status: todo
+Priority: P0
+Depends_On: WP-001
+Owner: codex
+Estimate: 120m
+
+Goal:
+- Add reliable vector search over sqlite-vec with self-match exclusion.
+
+Scope_In:
+- Load sqlite-vec extension/bindings at store startup.
+- Implement two-step vector query pattern (no JOIN with vec table).
+- Convert distance to clamped vecScore in [0,1].
+- Exclude current item ID during retrieval.
+
+Scope_Out:
+- FTS retrieval and fusion ranking logic.
+
+Files_To_Touch:
+- internal/store/store.go
+- internal/store/search.go
+- internal/store/search_test.go
+- go.mod
+
+Implementation_Steps:
+1. Initialize sqlite-vec support during DB setup.
+2. Add vector query API returning scored hits with metadata lookup step.
+3. Add self-match filter and clamped score conversion.
+4. Add tests for happy path and self-match exclusion.
+
+Acceptance_Criteria:
+- [ ] Vector search uses two-step pattern and avoids JOIN hangs.
+- [ ] Returned vecScore is always clamped to [0,1].
+- [ ] Current item is never returned as a match.
+- [ ] Store tests pass.
+
+Validation:
+- Command: `go test ./internal/store/...`
+- Expected: vector search tests pass, including self-exclusion case.
+
+Notes:
+- Keep the query limited to `limit*3` candidates before metadata filtering.

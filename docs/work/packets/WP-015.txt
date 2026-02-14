@@ -1,0 +1,46 @@
+ID: WP-015
+Title: Add unit tests across all packages
+Status: todo
+Priority: P1
+Depends_On: WP-001..WP-012
+Owner: codex
+Estimate: 180m
+
+Goal:
+- Reach broad unit-level coverage for core project behavior.
+
+Scope_In:
+- Store schema/search/fusion tests.
+- Embedder retry/truncation tests.
+- Ingest content-shape tests.
+- Formatter output tests.
+- Engine workflow tests with mocks.
+
+Scope_Out:
+- Real sqlite-vec integration tests and live GitHub E2E.
+
+Files_To_Touch:
+- internal/store/*_test.go
+- internal/embed/*_test.go
+- internal/ingest/*_test.go
+- internal/respond/*_test.go
+- internal/engine/*_test.go
+
+Implementation_Steps:
+1. Add missing tests package by package.
+2. Add deterministic fixtures for scored outputs.
+3. Cover error paths and no-op conditions.
+4. Ensure tests run fast in CI.
+
+Acceptance_Criteria:
+- [ ] Critical paths and edge cases have test coverage.
+- [ ] Self-match exclusion has direct tests.
+- [ ] No-match formatter and comment deletion transitions are covered.
+- [ ] Unit test suite passes reliably.
+
+Validation:
+- Command: `go test ./...`
+- Expected: all unit tests pass.
+
+Notes:
+- Prefer table-driven tests for query/format logic.

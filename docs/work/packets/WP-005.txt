@@ -1,0 +1,44 @@
+ID: WP-005
+Title: Implement ingest pipeline for issues and pull requests
+Status: todo
+Priority: P0
+Depends_On: none
+Owner: codex
+Estimate: 90m
+
+Goal:
+- Produce consistent embeddable text from issue and PR events.
+
+Scope_In:
+- Issue builder: title + body handling.
+- PR builder: title + description + files + diff summary.
+- Diff truncation to 4000 chars.
+- Empty title/body fallback behavior.
+
+Scope_Out:
+- External API calls and storage writes.
+
+Files_To_Touch:
+- internal/ingest/issue.go
+- internal/ingest/pr.go
+- internal/ingest/diff.go
+- internal/ingest/ingest_test.go
+
+Implementation_Steps:
+1. Implement issue text builder with empty-body handling.
+2. Implement PR text builder with file list and diff truncation.
+3. Add helper for fallback modes when diff is unavailable.
+4. Add tests for issue/PR shape variants.
+
+Acceptance_Criteria:
+- [ ] Issue and PR builders match spec content format.
+- [ ] Diff is capped at 4000 characters.
+- [ ] Empty content fallbacks work without panics.
+- [ ] Ingest tests pass.
+
+Validation:
+- Command: `go test ./internal/ingest/...`
+- Expected: all ingest tests pass.
+
+Notes:
+- Keep output deterministic for stable embeddings in tests.

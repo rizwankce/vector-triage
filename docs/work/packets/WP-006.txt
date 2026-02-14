@@ -1,0 +1,44 @@
+ID: WP-006
+Title: Implement GitHub Models embedder with retries and truncation
+Status: todo
+Priority: P0
+Depends_On: none
+Owner: codex
+Estimate: 120m
+
+Goal:
+- Add production embedder implementation using GitHub Models API.
+
+Scope_In:
+- Implement `Embedder` interface.
+- HTTP client with 30s timeout.
+- Retry policy with `Retry-After` and exponential backoff (1s/2s/4s).
+- Input truncation to approx 30000 chars.
+
+Scope_Out:
+- Search, ranking, and GitHub comment logic.
+
+Files_To_Touch:
+- internal/embed/embedder.go
+- internal/embed/github_models.go
+- internal/embed/mock.go
+- internal/embed/github_models_test.go
+
+Implementation_Steps:
+1. Implement request/response types and auth header handling.
+2. Add retry/backoff and non-2xx error handling.
+3. Add text truncation helper.
+4. Add tests with mocked HTTP server for retries and failures.
+
+Acceptance_Criteria:
+- [ ] Embedder returns 1536-dimension vectors on success.
+- [ ] Retries honor retry headers/backoff and stop after max attempts.
+- [ ] Truncation is applied before request send.
+- [ ] Embedder tests pass.
+
+Validation:
+- Command: `go test ./internal/embed/...`
+- Expected: tests pass for success, retry, and failure paths.
+
+Notes:
+- Keep HTTP behavior observable via small test hooks.

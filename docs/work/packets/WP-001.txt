@@ -1,0 +1,40 @@
+ID: WP-001
+Title: Scaffold store schema and migrations
+Status: done
+Priority: P0
+Depends_On: none
+Owner: codex
+Estimate: 90m
+
+Goal:
+- Implement SQLite schema creation and migration version tracking.
+
+Scope_In:
+- Create `items`, `items_fts`, `items_vec`, and `schema_version`.
+- Add migration runner with ordered version application.
+- Add tests for first-run and migration behavior.
+
+Scope_Out:
+- Search, embedding, and GitHub comment posting.
+
+Files_To_Touch:
+- internal/store/migrations.go
+- internal/store/store.go
+- internal/store/store_test.go
+
+Implementation_Steps:
+1. Add schema SQL and migration version constants.
+2. Implement startup migration runner and version checks.
+3. Add tests for empty DB init and sequential migration apply.
+
+Acceptance_Criteria:
+- [x] Fresh DB creates all required tables/indexes/triggers.
+- [x] Existing DB migrates to latest schema version without data loss.
+- [x] Tests pass for schema init and migration flow.
+
+Validation:
+- Command: `go test ./internal/store/...`
+- Expected: tests pass with no migration regressions.
+
+Notes:
+- Keep schema statements idempotent (`IF NOT EXISTS`) where possible.

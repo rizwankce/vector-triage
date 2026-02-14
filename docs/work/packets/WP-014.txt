@@ -1,0 +1,44 @@
+ID: WP-014
+Title: Apply pull_request_target security hardening
+Status: todo
+Priority: P1
+Depends_On: WP-013
+Owner: codex
+Estimate: 90m
+
+Goal:
+- Enforce secure behavior when running with base-repo write token.
+
+Scope_In:
+- Verify workflow uses `pull_request_target`.
+- Ensure no PR branch checkout in action flow.
+- Audit shell command usage for untrusted input interpolation.
+- Add explicit security checks and docs for forbidden patterns.
+
+Scope_Out:
+- Feature additions unrelated to security model.
+
+Files_To_Touch:
+- action.yml
+- cmd/triage/main.go
+- internal/github/event.go
+- README.md
+
+Implementation_Steps:
+1. Confirm event triggers and permissions are minimal.
+2. Audit for `actions/checkout` of PR code and remove if present.
+3. Ensure PR content is never executed as shell/template input.
+4. Document secure operation and constraints.
+
+Acceptance_Criteria:
+- [ ] No path executes code from forked PR content.
+- [ ] Workflow and docs explicitly state forbidden behaviors.
+- [ ] Security assertions are reflected in tests/docs.
+- [ ] Security review checklist is complete.
+
+Validation:
+- Command: `rg -n \"actions/checkout|pull_request_target|eval|bash -c\" .`
+- Expected: no unsafe checkout/eval patterns in action path.
+
+Notes:
+- Treat title/body/diff as untrusted text only.

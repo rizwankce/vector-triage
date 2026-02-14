@@ -1,0 +1,43 @@
+ID: WP-004
+Title: Implement RRF fusion and display similarity model
+Status: todo
+Priority: P0
+Depends_On: WP-002,WP-003
+Owner: codex
+Estimate: 120m
+
+Goal:
+- Combine vector and FTS results into final ranked triage output.
+
+Scope_In:
+- Implement RRF ordering with constant `k=60`.
+- Compute `displaySimilarity = max(vecScore, ftsScore)`.
+- Apply similarity and duplicate thresholds.
+- Truncate to max-results after filtering.
+
+Scope_Out:
+- Markdown rendering and GitHub comment I/O.
+
+Files_To_Touch:
+- internal/store/rrf.go
+- internal/store/search.go
+- internal/store/search_test.go
+
+Implementation_Steps:
+1. Create fused result model with per-source and display scores.
+2. Implement RRF accumulation by rank positions.
+3. Apply filter, duplicate flag, and max-results limits.
+4. Add deterministic tests with known ranked lists.
+
+Acceptance_Criteria:
+- [ ] Final ordering is by RRF score.
+- [ ] User-facing percentage comes from display similarity.
+- [ ] Threshold behavior matches spec defaults.
+- [ ] Tests cover one-list and two-list overlap cases.
+
+Validation:
+- Command: `go test ./internal/store/... -run 'RRF|Fuse'`
+- Expected: fusion tests pass with stable ordering.
+
+Notes:
+- Keep this logic pure for easy unit testing.

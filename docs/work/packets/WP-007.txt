@@ -1,0 +1,43 @@
+ID: WP-007
+Title: Implement GitHub event parsing and API client wrappers
+Status: todo
+Priority: P0
+Depends_On: none
+Owner: codex
+Estimate: 120m
+
+Goal:
+- Normalize webhook payloads and GitHub API calls behind internal interfaces.
+
+Scope_In:
+- Parse `issues` and `pull_request_target` event payloads.
+- Build internal `Event` model fields (title/body/files/diff metadata).
+- Create client wrappers for issues, pulls, comments, and files/diff fetch.
+- Add error wrapping for non-fatal logging upstream.
+
+Scope_Out:
+- Orphan branch state persistence and engine orchestration.
+
+Files_To_Touch:
+- internal/github/event.go
+- internal/github/client.go
+- internal/github/client_test.go
+
+Implementation_Steps:
+1. Implement payload parsing functions from event file path.
+2. Add go-github wrapper methods used by engine and state manager.
+3. Add test fixtures for issue and PR payloads.
+4. Add tests for parsing and API wrapper behavior.
+
+Acceptance_Criteria:
+- [ ] Issue and PR events map correctly into internal `Event`.
+- [ ] Client wrappers hide go-github details from callers.
+- [ ] Errors include enough context for warning logs.
+- [ ] Parsing tests pass with representative payload fixtures.
+
+Validation:
+- Command: `go test ./internal/github/... -run 'Event|Client'`
+- Expected: parser/client wrapper tests pass.
+
+Notes:
+- Keep wrappers minimal and focused on bot requirements.

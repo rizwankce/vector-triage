@@ -1,0 +1,35 @@
+ID: WP-###
+Title:
+Status: todo
+Priority: P1
+Depends_On: none
+Owner: codex
+Estimate: 60m
+
+Goal:
+-
+
+Scope_In:
+-
+
+Scope_Out:
+-
+
+Files_To_Touch:
+-
+
+Implementation_Steps:
+1.
+2.
+3.
+
+Acceptance_Criteria:
+- [ ] 
+- [ ] 
+
+Validation:
+- Command:
+- Expected:
+
+Notes:
+-
