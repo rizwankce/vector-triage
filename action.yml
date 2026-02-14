@@ -43,6 +43,7 @@ runs:
       shell: bash
       run: /tmp/triage-bot
       env:
+        GITHUB_TOKEN: ${{ github.token }}
         INPUT_SIMILARITY_THRESHOLD: ${{ inputs.similarity-threshold }}
         INPUT_DUPLICATE_THRESHOLD: ${{ inputs.duplicate-threshold }}
         INPUT_MAX_RESULTS: ${{ inputs.max-results }}
