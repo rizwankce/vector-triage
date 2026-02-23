@@ -12,9 +12,7 @@ on:
         required: false
         default: "main"
         type: string
-  schedule:
-    - cron: "23 4 * * 1"
-
+        
 permissions:
   contents: read
 
